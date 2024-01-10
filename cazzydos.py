@@ -19,12 +19,12 @@ banner = """
 ╔════════════════════════╗
 ║ Created by: CazzySoci  ║
 ║                        ║
-║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔        ║
+║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔          ║
 ║                        ║
 ║  We Are AnonCazzySoci  ║
 ║    •We don't die       ║
 ║    •We Multiply        ║
-║                        ║
+║    •Expect us!         ║
 ╚════════════════════════╝
 \033[1;36m
 """
