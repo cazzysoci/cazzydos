@@ -271,7 +271,7 @@ def create_botnet():
 
 def check_website(url):
     try:
-        answers = dns.resolver.query(url, 'A')
+        answers = dns.resolver.resolve(url, 'A')
         print("Valid URL")
         print("Loading...")
         time.sleep(5)
