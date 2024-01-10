@@ -281,6 +281,7 @@ def check_botnet_status():
         print("Botnet is active and ready to launch attacks!")
     else:
         print("Botnet is offline. Unable to launch attacks.")
+check_botnet_status()
 
 def check_website(url):
     if not url.startswith("http://") and not url.startswith("https://"):
@@ -306,7 +307,6 @@ def check_website(url):
     except:
         print("Sorry, the website URL is not valid.")
 
-check_botnet_status()
 check_website(target_url)
 
 
