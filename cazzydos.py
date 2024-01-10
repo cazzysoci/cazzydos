@@ -308,7 +308,16 @@ def check_botnet_status():
             proxy = random.choice(proxy_list)
             proxy_ip, proxy_port = proxy.split(":")
             print(f"Proxy: {proxy_ip}:{proxy_port}")
-            print("Botnet is active and ready to launch attacks!")
+
+            # Check if the botnet is active or not
+            if botnet_size > 0:
+                print("Botnet is active and ready to launch attacks!")
+            else:
+                print("Botnet is offline.")
+
             time.sleep(5)  # Wait for 5 seconds before printing the status again
         except:
             pass
+
+check_botnet_status()
+
