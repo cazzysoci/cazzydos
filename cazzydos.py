@@ -21,10 +21,10 @@ banner = """
 ║                        ║
 ║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔        ║
 ║                        ║
-║  We Are AnonCazzySoci 
-║    •We don't die
-     •We Multiply
-║    
+║  We Are AnonCazzySoci  ║
+║    •We don't die       ║
+║    •We Multiply        ║
+║                        ║
 ╚════════════════════════╝
 \033[1;36m
 """
