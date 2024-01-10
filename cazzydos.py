@@ -21,7 +21,9 @@ banner = """
 ║                        ║
 ║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔        ║
 ║                        ║
-║  We Are AnonCazzySoci  ║
+║  We Are AnonCazzySoci 
+║    "
+║    
 ╚════════════════════════╝
 \033[1;36m
 """
@@ -32,7 +34,7 @@ botnet_size = 10000
 fake_ip = '66.118.234.34:22'
 
 proxy_list = []
-with open("proxy.txt", "r") as file:
+with open("cazzy.txt", "r") as file:
     proxy_list = file.read().splitlines()
 
 def get_ip_addresses(url):
