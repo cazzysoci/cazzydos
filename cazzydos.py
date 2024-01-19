@@ -37,7 +37,7 @@ end_port = 100
 fake_ip = '66.118.234.34:22'
 
 def generate_user_agent():
-    with open("user_agents.txt", "r") as file:
+    with open("ua.txt", "r") as file:
         user_agents = file.read().splitlines()
     return random.choice(user_agents)
 
