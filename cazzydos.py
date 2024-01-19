@@ -31,7 +31,7 @@ credit = """
 \033[1;36m
 """
 print(credit)
-target_url = "TARGET_URL"
+target_url = print("Target url: ")
 start_port = 1
 end_port = 100
 fake_ip = '66.118.234.34:22'
