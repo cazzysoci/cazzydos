@@ -126,7 +126,7 @@ def send_http_get_requests():
 def execute_script():
     # Read the proxy list from a txt file
     proxy_list = []
-    with open("proxy_list.txt", "r") as file:
+    with open("cazzy.txt", "r") as file:
         proxy_list = file.read().splitlines()
 
     udp_thread = threading.Thread(target=send_udp_packets)
