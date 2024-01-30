@@ -92,7 +92,7 @@ source_ips = [
 ]
 
 proxies = []
-with open('socks5'.txt', 'r') as file:
+with open('cazzy'.txt', 'r') as file:
     proxies = file.read().splitlines()
 
 def ddos_tcp():
