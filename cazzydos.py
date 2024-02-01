@@ -37,7 +37,7 @@ target_url = urllib.parse.urlparse(target_url).netloc
 target_port = input("Target port: ")
 # Replace with the target website port
 socks5_file = input("Enter name Proxy file: ") # Path to the SOCKS5 proxies file
-botnets_file = input("Enter list of IP address file botnets") # Path to the botnets IP addresses file
+botnets_file = input("Enter list of IP address file botnets: ") # Path to the botnets IP addresses file
 useragents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36",
