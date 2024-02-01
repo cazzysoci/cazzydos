@@ -172,4 +172,4 @@ def start_attack():
 
         time.sleep(2)
 
-start_attack() I want to speed up the attack.
+start_attack()
