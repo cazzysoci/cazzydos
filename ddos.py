@@ -1237,7 +1237,22 @@ ip_list_urls = [
     "https://www.proxynova.com/proxy-server-list/",
     "https://proxybros.com/free-proxy-list/",
     "https://proxydb.net/",
-    "https://spys.one/en/free-proxy-list/",  
+    "https://spys.one/en/free-proxy-list/",
+    "https://www.freeproxy.world/?type=&anonymity=&country=&speed=&port=&page=1#google_vignette",
+    "https://hasdata.com/free-proxy-list",
+    "https://www.proxyrack.com/free-proxy-list/",
+    "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all&ssl=all&anonymity=all",
+    "https://www.shodan.io/search?query=brazil",
+    "https://www.shodan.io/search?query=germany",
+    "https://www.shodan.io/search?query=france",
+    "https://www.shodan.io/search?query=USA",
+    "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/socks4/data.txt",
+    "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/socks5/data.txt",
+    "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/all/data.txt",
+    "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt",
+    "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt",
+    "https://geonode.com/free-proxy-list",
+    "https://www.proxynova.com/proxy-server-list/anonymous-proxies/",  
 ]
 
 async def fetch_ip_addresses(url):
