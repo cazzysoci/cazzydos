@@ -1,4 +1,4 @@
-git clone https://github.com/cazzysoci/DDOS.git
+git clone https://github.com/cazzysoci/cazzydos.git
 
 cd DDOS
 
